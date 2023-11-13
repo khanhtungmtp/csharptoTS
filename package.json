@@ -1,0 +1,177 @@
+{
+  "name": "csharptots",
+  "displayName": "C#-TS Converter model",
+  "publisher": "khanhtungmtp",
+  "description": "",
+  "icon": "images/logo.png",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.83.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "converter.cs2ts",
+        "title": "Convert C# to TypeScript"
+      },
+      {
+        "command": "converter.ts2cs",
+        "title": "Convert TypeScript to C#"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "converter.cs2ts",
+          "group": "navigation"
+        },
+        {
+          "command": "converter.ts2cs",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": [
+      {
+        "type": "object",
+        "title": "TS to C# configuration",
+        "properties": {
+          "converter.propertiesToCamelCase": {
+            "type": "boolean",
+            "default": true,
+            "description": "True for camelCase, false for preserving original name. Default is true (set first char to lower case)"
+          },
+          "converter.keepAbbreviation": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to set lower to first word of name or name (do not contain '_'). Default is True "
+          },
+          "converter.trimPostfixes": {
+            "type": [
+              "array",
+              "string"
+            ],
+            "default": "",
+            "description": "Removes specified postfixes from property names, types & class names. Can be array OR string. Case-sensitive."
+          },
+          "converter.recursiveTrimPostfixes": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether or not trim postfixes recursive. (e.g. with postfixes 'A' & 'B' PersonAAB will become PersonAA when it's false & Person when it's true)"
+          },
+          "converter.ignoreInitializer": {
+            "type": "boolean",
+            "default": true,
+            "description": "Ignore property initializer"
+          },
+          "converter.removeMethodBodies": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to remove method bodies, false to preserve the body as-is"
+          },
+          "converter.removeConstructors": {
+            "type": "boolean",
+            "default": false,
+            "description": "True to remove class constructors, false to treat then like any other method"
+          },
+          "converter.methodStyle": {
+            "type": "string",
+            "enum": [
+              "signature",
+              "lambda",
+              "controller"
+            ],
+            "default": "signature",
+            "description": "'signature' to emit a method signature, 'lambda' to emit a lambda function. 'controller' to emit a lambda to call an async controller"
+          },
+          "converter.byteArrayToString": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to convert C# byte array type to Typescript string, defaults to true since the serialization of C# byte[] results in a string"
+          },
+          "converter.dateToDateOrString": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to convert C# DateTime and DateTimeOffset to Typescript (Date | string), defaults to true since the serialization of C# DateTime results in a string"
+          },
+          "converter.removeWithModifier": {
+            "type": "array",
+            "default": [],
+            "description": "Remove fields or properties with the given modifiers. Ex. if you want to remove private and internal members set to ['private', 'internal']"
+          },
+          "converter.removeNameRegex": {
+            "type": "string",
+            "default": "",
+            "description": "If setted, any property or field that its name matches the given regex will be removed"
+          },
+          "converter.classToInterface": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to convert classes to interfaces, false to convert classes to classes. Default is true"
+          },
+          "converter.preserveModifiers": {
+            "type": "boolean",
+            "default": false,
+            "description": "True to preserve fields and property modifiers. Default is false"
+          },
+          "converter.removeSpecialKeywords": {
+            "type": "boolean",
+            "default": false,
+            "description": "True to remove special keywords virtual and #nullable disable"
+          },
+          "converter.removeUsings": {
+            "type": "boolean",
+            "default": false,
+            "description": "True to remove using/import statements"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "title": "C# to TS configuration",
+        "properties": {
+          "converter.propertiesToPascalCase": {
+            "type": "boolean",
+            "default": true,
+            "description": "True for PascalCase (set first char to upper case), false for preserving original name "
+          },
+          "converter.arrayType": {
+            "type": "string",
+            "enum": [
+              "list",
+              "iqueryable",
+              "ienumerable"
+            ],
+            "default": "ienumerable",
+            "description": "Set the replacement type for array"
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.83.0",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
+    "glob": "^10.3.3",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2",
+    "@vscode/test-electron": "^2.3.4"
+  }
+}
