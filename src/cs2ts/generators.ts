@@ -112,7 +112,7 @@ export function generateClass(x: CSharpClass, config: ExtensionCs2TsConfig): str
     }
 }
 
-function getTypescriptPropertyName(name: string, config: ExtensionCs2TsConfig) {
+export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsConfig) {
     var isAbbreviation = name.toUpperCase() === name;
     name = trimMemberName(name, config);
     if (config.keepAbbreviation && isAbbreviation) {
@@ -138,21 +138,6 @@ function getTypescriptPropertyName(name: string, config: ExtensionCs2TsConfig) {
     return name;
 }
 
-function convertToLowerCaseWithUppercaseFirstAfterUnderscore(input: string): string {
-    const parts: string[] = input.split('_');
-
-    if (parts.length > 1) {
-        if (parts[0].length < 2) {
-            parts[0] = parts[0].toLowerCase();
-        } else {
-            parts[0] = convertLastCharToLowerCase(parts[0]);
-        }
-        // Ghép các phần lại thành chuỗi mới
-        return parts.join('_');
-    }
-
-    return input;
-}
 
 function convertLastCharToLowerCase(input: string): string {
     if (input.trim() !== '') {

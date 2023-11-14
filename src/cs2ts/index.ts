@@ -6,7 +6,7 @@ import * as types from './types';
 import { parseProperty, CSharpProperty } from "./properties";
 import { parseMethod, CSharpMethod, CSharpParameter, parseConstructor, parseRecord } from "./methods";
 
-import { generateProperty, trimMemberName, generateMethod, generateConstructor, generateClass, generateRecord } from "./generators";
+import { generateProperty, trimMemberName, generateMethod, generateConstructor, generateClass, generateRecord, getTypescriptPropertyName } from "./generators";
 import { ExtensionCs2TsConfig } from "./config";
 import { ParseResult } from "./parse";
 import compose = require("./compose");
@@ -60,10 +60,7 @@ function csFunction<T>(parse: (code: string) => ParseResult<T> | null, generate:
     };
 }
 function csPublicMember(code: string, config: ExtensionCs2TsConfig): MatchResult {
-
-
-
-    var patt = /public\s*(?:(?:abstract)|(?:sealed))?(\S*)\s+(.*)\s*{/;
+    var patt = /public\s*(?:(?:abstract)|(?:sealed))?(\S*)\s+(\S+)\s*{\s*get\s*=>\s*(.*?);\s*}/;
     var arr = patt.exec(code);
 
     var tsMembers: { [index: string]: string } = {
@@ -74,12 +71,18 @@ function csPublicMember(code: string, config: ExtensionCs2TsConfig): MatchResult
     if (arr === null) { return null; }
     var tsMember = tsMembers[arr[1]];
     var name = trimMemberName(arr[2], config);
+
+    // If the expression body contains a method invocation, set the return type to 'string'
+    const returnType = tsMember == undefined ? arr[1] : "any";
+    
     return {
-        result: `export ${tsMember || arr[1]} ${name} {`,
+        result: `${getTypescriptPropertyName(name, config)}: ${returnType};`,
         index: arr.index,
         length: arr[0].length
     };
+
 }
+
 /**Find the next match */
 function findMatch(code: string, startIndex: number, config: ExtensionCs2TsConfig): MatchResult {
     code = code.substr(startIndex);
@@ -184,7 +187,6 @@ export function cs2ts(code: string, config: ExtensionCs2TsConfig): string {
     }
     //add the last unmatched code:
     ret += code.substr(index);
-
     return ret;
 }
 //#endregion

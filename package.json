@@ -20,8 +20,13 @@
         "title": "Convert C# to TypeScript"
       },
       {
-        "command": "converter.ts2cs",
-        "title": "Convert TypeScript to C#"
+        "command": "converter.pasteAsCs2Ts",
+        "title": "C# to TypeScript (Paste As)"
+      },
+      {
+        "command": "converter.convertCs2TsFromSidebar",
+        "title": "C# to TypeScript (To file)",
+        "enablement": "resourceLangId == csharp"
       }
     ],
     "menus": {
@@ -31,10 +36,16 @@
           "group": "navigation"
         },
         {
-          "command": "converter.ts2cs",
+          "command": "converter.pasteAsCs2Ts",
           "group": "navigation"
         }
-      ]
+      ],
+      "explorer/context": [
+				{
+					"command": "converter.convertCs2TsFromSidebar",
+					"when": "resourceLangId == csharp",
+					"group": "7_modification"
+				}]
     },
     "configuration": [
       {
