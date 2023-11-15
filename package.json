@@ -1,10 +1,10 @@
 {
   "name": "csharptots",
-  "displayName": "C#-TS Converter model",
+  "displayName": "C# to Typescript Converter",
   "publisher": "khanhtungmtp",
   "description": "",
   "icon": "images/logo.png",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.83.0"
   },
@@ -21,7 +21,8 @@
       },
       {
         "command": "converter.pasteAsCs2Ts",
-        "title": "C# to TypeScript (Paste As)"
+        "title": "C# to TypeScript (Paste As)",
+        "enablement": "resourceLangId == typescript"
       },
       {
         "command": "converter.convertCs2TsFromSidebar",
@@ -37,15 +38,17 @@
         },
         {
           "command": "converter.pasteAsCs2Ts",
-          "group": "navigation"
+          "group": "navigation",
+          "when": "resourceLangId == typescript"
         }
       ],
       "explorer/context": [
-				{
-					"command": "converter.convertCs2TsFromSidebar",
-					"when": "resourceLangId == csharp",
-					"group": "7_modification"
-				}]
+        {
+          "command": "converter.convertCs2TsFromSidebar",
+          "when": "resourceLangId == csharp",
+          "group": "7_modification"
+        }
+      ]
     },
     "configuration": [
       {
