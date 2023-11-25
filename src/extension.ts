@@ -2,7 +2,7 @@
 import * as vscode from 'vscode';
 import { cs2ts, getCs2TsConfiguration } from './cs2ts';
 import { getTs2CsConfiguration, ts2cs } from './ts2cs';
-
+const path = require('path'); 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -64,11 +64,26 @@ export function activate(context: vscode.ExtensionContext) {
     let convertCs2TsDisposable = vscode.commands.registerCommand('converter.convertCs2TsFromSidebar', async (resource) => {
         if (resource && resource.fsPath.endsWith('.cs')) {
             try {
+                // Hiển thị hộp thoại prompt để người dùng nhập đường dẫn mới cho file .ts
+                const newTsPath = await vscode.window.showInputBox({ prompt: 'Enter the new path for the TypeScript file' });
+
+                if (!newTsPath) {
+                    // Người dùng đã hủy bỏ hoặc không nhập đường dẫn mới
+                    return;
+                }
+
+                // Tạo nội dung TypeScript từ file C#
                 const tsContent = await convertCs2Ts(vscode.Uri.file(resource.fsPath));
-                // Tạo một document mới và lưu nội dung convert vào file .ts
-                const newTsUri = vscode.Uri.file(resource.fsPath.replace(/\.cs$/, '.ts'));
+
+                // Tạo đường dẫn mới cho file TypeScript
+                const newTsUri = vscode.Uri.file(path.join(newTsPath, path.basename(resource.fsPath, '.cs').toLowerCase() + '.ts'));
+
+                // Lưu nội dung convert vào file .ts
                 await vscode.workspace.fs.writeFile(newTsUri, Buffer.from(tsContent, 'utf-8'));
     
+                // Đổi tên file .ts để di chuyển đến đường dẫn mới
+                await vscode.workspace.fs.rename(newTsUri, vscode.Uri.file(newTsUri.fsPath.replace(/\.cs\.ts$/, '.ts')));
+
                 // Mở tài liệu mới trong trình soạn thảo
                 const newTsDocument = await vscode.workspace.openTextDocument(newTsUri);
                 await vscode.window.showTextDocument(newTsDocument);
@@ -79,6 +94,8 @@ export function activate(context: vscode.ExtensionContext) {
     });
     
     
+
+
 
     vscode.window.registerFileDecorationProvider(new CsFileDecorationProvider());
 

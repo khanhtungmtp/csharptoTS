@@ -4,7 +4,7 @@
   "publisher": "khanhtungmtp",
   "description": "",
   "icon": "images/logo.png",
-  "version": "1.0.1",
+  "version": "2.0.1",
   "engines": {
     "vscode": "^1.83.0"
   },
@@ -17,7 +17,8 @@
     "commands": [
       {
         "command": "converter.cs2ts",
-        "title": "Convert C# to TypeScript"
+        "title": "Convert C# to TypeScript",
+        "enablement": "resourceLangId == csharp || resourceLangId == typescript"
       },
       {
         "command": "converter.pasteAsCs2Ts",
@@ -34,7 +35,8 @@
       "editor/context": [
         {
           "command": "converter.cs2ts",
-          "group": "navigation"
+          "group": "navigation",
+          "when": "resourceLangId == csharp || resourceLangId == typescript"
         },
         {
           "command": "converter.pasteAsCs2Ts",
