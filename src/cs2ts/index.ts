@@ -1,16 +1,13 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import * as types from './types';
-
-import { parseProperty, CSharpProperty } from "./properties";
-import { parseMethod, CSharpMethod, CSharpParameter, parseConstructor, parseRecord } from "./methods";
+import * as prettier from 'prettier';
+import { parseProperty } from "./properties";
+import { parseMethod, parseConstructor, parseRecord } from "./methods";
 
 import { generateProperty, trimMemberName, generateMethod, generateConstructor, generateClass, generateRecord, getTypescriptPropertyName } from "./generators";
 import { ExtensionCs2TsConfig } from "./config";
 import { ParseResult } from "./parse";
-import compose = require("./compose");
-import regexs = require("./regexs");
 import { parseXmlDocBlock, generateJsDoc } from "./commentDoc";
 import { parseClass } from "./classes";
 
@@ -33,7 +30,7 @@ const csMethod = csFunction(parseMethod, generateMethod);
 const csConstructor = csFunction(parseConstructor, generateConstructor);
 const csCommentSummary = csFunction(parseXmlDocBlock, generateJsDoc);
 const csClass = csFunction(parseClass, generateClass);
-
+let isNamespaceSingle = false;
 function csAttribute(code: string): MatchResult {
     var patt = /[ \t]*\[\S*\][ \t]*\r?\n/;
     var arr = patt.exec(code);
@@ -73,7 +70,7 @@ function csPublicMember(code: string, config: ExtensionCs2TsConfig): MatchResult
     var name = trimMemberName(arr[2], config);
 
     // If the expression body contains a method invocation, set the return type to 'string'
-    const returnType = tsMember == undefined ? arr[1] : "any";
+    const returnType = tsMember === undefined ? arr[1] : "any";
     
     return {
         result: `${getTypescriptPropertyName(name, config)}: ${returnType};`,
@@ -112,12 +109,32 @@ function findMatch(code: string, startIndex: number, config: ExtensionCs2TsConfi
         length: firstMatch.length
     } : null;
 }
+
 function removeSpecialKeywords(code: string): string {
     return code.replace(/\s+virtual\s+/g, ' ').replace(/#nullable\s*(disable|enable)\s*\n/g, '');
 }
+
 function removeUsings(code: string): string {
     return code.replace(/using\s+[^;]+;\s*\n/g, '');
 }
+
+function removeNameSpace(code: string): string {
+    // Handle both cases: namespace API.Models; and namespace API.Models { ...
+    const regex = /namespace\s+[^;]+;\s*\n/g;
+    if (regex.test(code)) {
+        isNamespaceSingle = true;
+        return code.replace(/namespace\s+[^;]+;\s*\n/g, '');
+    }
+    return code.replace(/namespace\s+[^;{]+;?\s*\n?/g, '');
+}
+
+function removeAnonationClass(code: string): string {
+    // Match annotations with specific pattern [Index(...)]
+    const annotationRegex = /\[\s*Index\s*\([^)]*\)\s*\]/g;
+    // Replace matched annotations with an empty string
+    return code.replace(annotationRegex, '');
+}
+
 export function getCs2TsConfiguration(): ExtensionCs2TsConfig {
 
     const rawTrimPostfixes = vscode.workspace.getConfiguration('converter').get("trimPostfixes") as string | string[];
@@ -161,7 +178,7 @@ export function getCs2TsConfiguration(): ExtensionCs2TsConfig {
     };
 }
 /**Convert c# code to typescript code */
-export function cs2ts(code: string, config: ExtensionCs2TsConfig): string {
+export function cs2ts(code: string, config: ExtensionCs2TsConfig): Promise<string> {
     var ret = "";
 
     if (config.removeSpecialKeywords) {
@@ -172,21 +189,38 @@ export function cs2ts(code: string, config: ExtensionCs2TsConfig): string {
         code = removeUsings(code);
     }
 
+    code = removeNameSpace(code);
+    // Remove annotations above the class
+    code = removeAnonationClass(code);
+
     var index = 0;
     while (true) {
         var nextMatch = findMatch(code, index, config);
         if (nextMatch === null) { break; }
-        //add the last unmatched code:
+        // add the last unmatched code:
         ret += code.substr(index, nextMatch.index - index);
 
-        //add the matched code:
-        ret += nextMatch.result;
+        // check if the matched code is a class, and remove attributes if needed
+        if (nextMatch.result.startsWith("class")) {
+            const modifiedClass = csClass(nextMatch.result, config);
+            if (modifiedClass) {
+                ret += modifiedClass.result;
+            }
+        }
+        else {
+            // add the matched code as it is
+            ret += nextMatch.result;
+        }
 
-        //increment the search index:
+        // increment the search index:
         index = nextMatch.index + nextMatch.length;
     }
-    //add the last unmatched code:
+    // add the last unmatched code:
     ret += code.substr(index);
-    return ret;
+    if (!isNamespaceSingle) {
+        ret = ret.trim().replace(/^{|}$/g, '');
+    }
+    isNamespaceSingle = false;
+    // Format the code using Prettier
+    return prettier.format(ret, { parser: 'typescript' });
 }
-//#endregion
