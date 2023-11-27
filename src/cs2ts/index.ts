@@ -31,6 +31,7 @@ const csConstructor = csFunction(parseConstructor, generateConstructor);
 const csCommentSummary = csFunction(parseXmlDocBlock, generateJsDoc);
 const csClass = csFunction(parseClass, generateClass);
 let isNamespaceSingle = false;
+let isNoNameSpace = false;
 function csAttribute(code: string): MatchResult {
     var patt = /[ \t]*\[\S*\][ \t]*\r?\n/;
     var arr = patt.exec(code);
@@ -119,13 +120,25 @@ function removeUsings(code: string): string {
 }
 
 function removeNameSpace(code: string): string {
-    // Handle both cases: namespace API.Models; and namespace API.Models { ...
-    const regex = /namespace\s+[^;]+;\s*\n/g;
-    if (regex.test(code)) {
-        isNamespaceSingle = true;
-        return code.replace(/namespace\s+[^;]+;\s*\n/g, '');
+    // Check if the code contains a namespace declaration without curly braces
+    const hasNamespaceWithoutCurlyBraces = /namespace\s+[^;]+;\s*\n/g.test(code);
+
+    // Check if the code contains a namespace declaration with curly braces
+    const hasNamespaceWithCurlyBraces = /namespace\s+[^;{]+;?\s*\n?/g.test(code);
+
+    if (hasNamespaceWithoutCurlyBraces) {
+        isNamespaceSingle = true; // Reset the flag
+        isNoNameSpace = false;
+        return code.replace(/namespace\s+[^;]+;\s*\n/g, ''); // Remove namespace without {}
+    } else if (hasNamespaceWithCurlyBraces) {
+        isNamespaceSingle = false;
+        isNoNameSpace = false;
+        return code.replace(/namespace\s+[^;{]+;?\s*\n?/g, ''); // Remove namespace with {}
+    } else {
+        isNoNameSpace = true;
+        isNamespaceSingle = false; // Reset the flag if there is no namespace
+        return code;
     }
-    return code.replace(/namespace\s+[^;{]+;?\s*\n?/g, '');
 }
 
 function removeAnonationClass(code: string): string {
@@ -217,10 +230,11 @@ export function cs2ts(code: string, config: ExtensionCs2TsConfig): Promise<strin
     }
     // add the last unmatched code:
     ret += code.substr(index);
-    if (!isNamespaceSingle) {
+    if (!isNamespaceSingle && !isNoNameSpace) {
         ret = ret.trim().replace(/^{|}$/g, '');
     }
     isNamespaceSingle = false;
+    isNoNameSpace = false;
     // Format the code using Prettier
     return prettier.format(ret, { parser: 'typescript' });
 }

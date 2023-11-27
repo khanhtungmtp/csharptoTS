@@ -8,35 +8,45 @@ export function activate(context: vscode.ExtensionContext) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-    let cs2tsDisposable = vscode.commands.registerCommand('converter.cs2ts', () => {
-        // The code you place here will be executed every time your command is executed
-
-        var editor = vscode.window.activeTextEditor;
+    let cs2tsDisposable = vscode.commands.registerCommand('converter.cs2ts', async () => {
+        const editor = vscode.window.activeTextEditor;
         if (!editor) { return; }
 
-        var selection = editor.selection;
-        var text = editor.document.getText(selection);
+        const selection = editor.selection;
+        const text = editor.document.getText(selection);
 
-        editor.edit(async e => {
-            var config = getCs2TsConfiguration();
-            e.replace(selection, await cs2ts(text, config));
+        const config = getCs2TsConfiguration();
+        const transformedText = await cs2ts(text, config);
+
+        editor.edit(editBuilder => {
+            // Apply the transformation to the selected text
+            editBuilder.replace(selection, transformedText);
         });
     });
 
+
     let pasteAsCs2TsDisposable = vscode.commands.registerCommand('converter.pasteAsCs2Ts', () => {
         // Get the content of the clipboard
-        const clipboardContent = vscode.env.clipboard.readText();
+        const clipboardContentPromise = vscode.env.clipboard.readText();
 
-        clipboardContent.then((text) => {
-            var editor = vscode.window.activeTextEditor;
-            if (!editor) { return; }
+        clipboardContentPromise.then(async (text) => {
+            try {
+                var editor = vscode.window.activeTextEditor;
+                if (!editor) { return; }
 
-            var selection = editor.selection;
+                var selection = editor.selection;
 
-            editor.edit(async e => {
+                // Use async/await to wait for the cs2ts function to resolve its promise
                 var config = getCs2TsConfiguration();
-                e.replace(selection, await cs2ts(text, config));
-            });
+                const transformedCode = await cs2ts(text, config);
+
+                editor.edit(e => {
+                    e.replace(selection, transformedCode);
+                });
+            } catch (error) {
+                // Log and handle the error
+                console.error('Error in pasteAsCs2TsDisposable:', error);
+            }
         });
     });
 

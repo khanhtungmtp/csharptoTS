@@ -14,11 +14,31 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "keybindings": [
+      {
+        "command": "converter.cs2ts",
+        "key": "ctrl+alt+c",
+        "mac": "cmd+alt+c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "converter.pasteAsCs2Ts",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "converter.convertCs2TsFromSidebar",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+f",
+        "when": "explorerViewletVisible && filesExplorerFocus"
+      }
+    ],
     "commands": [
       {
         "command": "converter.cs2ts",
         "title": "Convert C# to TypeScript",
-        "enablement": "resourceLangId == csharp || resourceLangId == typescript"
+        "enablement": "resourceLangId == typescript"
       },
       {
         "command": "converter.pasteAsCs2Ts",
@@ -36,7 +56,7 @@
         {
           "command": "converter.cs2ts",
           "group": "navigation",
-          "when": "resourceLangId == csharp || resourceLangId == typescript"
+          "when": "resourceLangId == typescript"
         },
         {
           "command": "converter.pasteAsCs2Ts",
