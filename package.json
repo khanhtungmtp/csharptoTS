@@ -4,7 +4,7 @@
   "publisher": "khanhtungmtp",
   "description": "",
   "icon": "images/logo.png",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "engines": {
     "vscode": "^1.83.0"
   },
@@ -162,29 +162,8 @@
           },
           "converter.removeUsings": {
             "type": "boolean",
-            "default": false,
-            "description": "True to remove using/import statements"
-          }
-        }
-      },
-      {
-        "type": "object",
-        "title": "C# to TS configuration",
-        "properties": {
-          "converter.propertiesToPascalCase": {
-            "type": "boolean",
             "default": true,
-            "description": "True for PascalCase (set first char to upper case), false for preserving original name "
-          },
-          "converter.arrayType": {
-            "type": "string",
-            "enum": [
-              "list",
-              "iqueryable",
-              "ienumerable"
-            ],
-            "default": "ienumerable",
-            "description": "Set the replacement type for array"
+            "description": "True to remove using/import statements"
           }
         }
       }

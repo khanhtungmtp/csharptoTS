@@ -1,7 +1,6 @@
 'use strict';
 import * as vscode from 'vscode';
 import { cs2ts, getCs2TsConfiguration } from './cs2ts';
-import { getTs2CsConfiguration, ts2cs } from './ts2cs';
 const path = require('path');
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -49,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                 if (!newTsPath) {
                     // Người dùng đã hủy bỏ hoặc không nhập đường dẫn mới
+                    vscode.window.showErrorMessage('Path for the TypeScript file is empty');
                     return;
                 }
 

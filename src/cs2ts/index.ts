@@ -192,7 +192,9 @@ export function getCs2TsConfiguration(): ExtensionCs2TsConfig {
 /**Convert c# code to typescript code */
 export function cs2ts(code: string, config: ExtensionCs2TsConfig): string {
     var ret = "";
-
+    if (code === '') {
+        vscode.window.showErrorMessage('Input code is empty');
+    }
     if (config.removeSpecialKeywords) {
         code = removeSpecialKeywords(code);
     }
@@ -234,5 +236,50 @@ export function cs2ts(code: string, config: ExtensionCs2TsConfig): string {
     }
     isNamespaceSingle = false;
     isNoNameSpace = false;
+    // Format the generated TypeScript code
+    ret = formatTypeScriptCode(ret);
+
     return ret;
+}
+
+function formatTypeScriptCode(code: string): string {
+    // Define the desired spaces for indentation
+    const spacesPerIndentation = 4;
+
+    // Split the code into lines
+    const lines = code.split('\n');
+
+    // Variable to track the current indentation level
+    let currentIndentation = 0;
+
+    // Function to get the current indentation string
+    const getIndentation = () => ' '.repeat(currentIndentation * spacesPerIndentation);
+
+    // Process each line and update indentation
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        // Skip empty lines
+        if (line === '') {
+            continue;
+        }
+
+        // Check if the line starts a block (e.g., interface, class, etc.)
+        if (line.endsWith('{')) {
+            lines[i] = getIndentation() + line;
+            currentIndentation++;
+        } else if (line.startsWith('}')) {
+            // Check if the line ends a block
+            currentIndentation = Math.max(0, currentIndentation - 1);
+            lines[i] = getIndentation() + line;
+        } else {
+            // Apply indentation to the line
+            lines[i] = getIndentation() + line;
+        }
+    }
+
+    // Join the lines back into a formatted code block
+    const formattedCode = lines.join('\n');
+
+    return formattedCode.trim();
 }
