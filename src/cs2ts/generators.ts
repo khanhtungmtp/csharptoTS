@@ -133,6 +133,18 @@ export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsCo
        }
     }
     if (config.propertiesToCamelCase && !isAbbreviation) {
+        /** TH KO VIET HOA HOAN TOAN NHUNG INCLUDE _ VA TRUOC _ VIET HOA HOAN TOAN */
+        if (name.includes('_')) {
+            const parts: string[] = name.split('_');
+            if (parts.length > 1) {
+                if (parts[0].length > 2 && parts[0].toUpperCase() === parts[0]) {
+                    parts[0] = convertLastCharToLowerCase(parts[0]);
+                }
+                // Ghép các phần lại thành chuỗi mới
+                return parts.join('_');
+            }
+
+        }
         return name[0].toLowerCase() + name.substring(1);
     }
     return name;
