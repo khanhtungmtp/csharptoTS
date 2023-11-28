@@ -123,7 +123,7 @@ function removeNameSpace(code: string): string {
     const hasNamespaceWithoutCurlyBraces = /namespace\s+[^;]+;\s*\n/g.test(code);
 
     // Check if the code contains a namespace declaration with curly braces
-    const hasNamespaceWithCurlyBraces = /namespace\s+[^;{]+;?\s*\n?/g.test(code);
+    const hasNamespaceWithCurlyBraces = /namespace\s+[^{]+{?\s*\n?/g.test(code);
 
     if (hasNamespaceWithoutCurlyBraces) {
         isNamespaceSingle = true; // Reset the flag
@@ -132,7 +132,7 @@ function removeNameSpace(code: string): string {
     } else if (hasNamespaceWithCurlyBraces) {
         isNamespaceSingle = false;
         isNoNameSpace = false;
-        return code.replace(/namespace\s+[^;{]+;?\s*\n?/g, ''); // Remove namespace with {}
+        return code.replace(/namespace\s+[^{]+{?\s*\n?/g, ''); // Remove namespace with {}
     } else {
         isNoNameSpace = true;
         isNamespaceSingle = false; // Reset the flag if there is no namespace
