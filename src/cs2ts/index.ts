@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import * as prettier from 'prettier';
 import { parseProperty } from "./properties";
 import { parseMethod, parseConstructor, parseRecord } from "./methods";
 
@@ -72,7 +71,7 @@ function csPublicMember(code: string, config: ExtensionCs2TsConfig): MatchResult
 
     // If the expression body contains a method invocation, set the return type to 'string'
     const returnType = tsMember === undefined ? arr[1] : "any";
-    
+
     return {
         result: `${getTypescriptPropertyName(name, config)}: ${returnType};`,
         index: arr.index,
@@ -191,7 +190,7 @@ export function getCs2TsConfiguration(): ExtensionCs2TsConfig {
     };
 }
 /**Convert c# code to typescript code */
-export function cs2ts(code: string, config: ExtensionCs2TsConfig): Promise<string> {
+export function cs2ts(code: string, config: ExtensionCs2TsConfig): string {
     var ret = "";
 
     if (config.removeSpecialKeywords) {
@@ -235,6 +234,5 @@ export function cs2ts(code: string, config: ExtensionCs2TsConfig): Promise<strin
     }
     isNamespaceSingle = false;
     isNoNameSpace = false;
-    // Format the code using Prettier
-    return prettier.format(ret, { parser: 'typescript' });
+    return ret;
 }

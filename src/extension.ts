@@ -1,52 +1,43 @@
 'use strict';
 import * as vscode from 'vscode';
 import { cs2ts, getCs2TsConfiguration } from './cs2ts';
-const path = require('path'); 
+import { getTs2CsConfiguration, ts2cs } from './ts2cs';
+const path = require('path');
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-    let cs2tsDisposable = vscode.commands.registerCommand('converter.cs2ts', async () => {
-        const editor = vscode.window.activeTextEditor;
+    let cs2tsDisposable = vscode.commands.registerCommand('converter.cs2ts', () => {
+        // The code you place here will be executed every time your command is executed
+
+        var editor = vscode.window.activeTextEditor;
         if (!editor) { return; }
 
-        const selection = editor.selection;
-        const text = editor.document.getText(selection);
+        var selection = editor.selection;
+        var text = editor.document.getText(selection);
 
-        const config = getCs2TsConfiguration();
-        const transformedText = await cs2ts(text, config);
-
-        editor.edit(editBuilder => {
-            // Apply the transformation to the selected text
-            editBuilder.replace(selection, transformedText);
+        editor.edit(e => {
+            var config = getCs2TsConfiguration();
+            e.replace(selection, cs2ts(text, config));
         });
     });
 
-
     let pasteAsCs2TsDisposable = vscode.commands.registerCommand('converter.pasteAsCs2Ts', () => {
         // Get the content of the clipboard
-        const clipboardContentPromise = vscode.env.clipboard.readText();
+        const clipboardContent = vscode.env.clipboard.readText();
 
-        clipboardContentPromise.then(async (text) => {
-            try {
-                var editor = vscode.window.activeTextEditor;
-                if (!editor) { return; }
+        clipboardContent.then((text) => {
+            var editor = vscode.window.activeTextEditor;
+            if (!editor) { return; }
 
-                var selection = editor.selection;
+            var selection = editor.selection;
 
-                // Use async/await to wait for the cs2ts function to resolve its promise
+            editor.edit(e => {
                 var config = getCs2TsConfiguration();
-                const transformedCode = await cs2ts(text, config);
-
-                editor.edit(e => {
-                    e.replace(selection, transformedCode);
-                });
-            } catch (error) {
-                // Log and handle the error
-                console.error('Error in pasteAsCs2TsDisposable:', error);
-            }
+                e.replace(selection, cs2ts(text, config));
+            });
         });
     });
 
@@ -69,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                 // Lưu nội dung convert vào file .ts
                 await vscode.workspace.fs.writeFile(newTsUri, Buffer.from(tsContent, 'utf-8'));
-    
+
                 // Đổi tên file .ts để di chuyển đến đường dẫn mới
                 await vscode.workspace.fs.rename(newTsUri, vscode.Uri.file(newTsUri.fsPath.replace(/\.cs\.ts$/, '.ts')));
 
@@ -92,12 +83,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 async function convertCs2Ts(uri: vscode.Uri): Promise<string> {
-  const document = await vscode.workspace.openTextDocument(uri);
-  const config = getCs2TsConfiguration();
-  return cs2ts(document.getText(), config);
+    const document = await vscode.workspace.openTextDocument(uri);
+    const config = getCs2TsConfiguration();
+    return cs2ts(document.getText(), config);
 }
 
-  
+
 
 class CsFileDecorationProvider implements vscode.FileDecorationProvider {
     provideFileDecoration(uri: vscode.Uri): vscode.ProviderResult<vscode.FileDecoration> {
