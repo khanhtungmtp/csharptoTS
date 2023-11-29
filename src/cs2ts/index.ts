@@ -153,6 +153,7 @@ export function getCs2TsConfiguration(): ExtensionCs2TsConfig {
     const trimPostfixes: string[] = typeof rawTrimPostfixes === "string" ? [rawTrimPostfixes] : rawTrimPostfixes;
 
     const propertiesToCamelCase = vscode.workspace.getConfiguration('converter').get("propertiesToCamelCase") as boolean;
+    const propertiesToTitleCase = vscode.workspace.getConfiguration('converter').get("propertiesToTitleCase") as boolean;
     const keepAbbreviation = vscode.workspace.getConfiguration('converter').get("keepAbbreviation") as boolean;
     const recursiveTrimPostfixes = vscode.workspace.getConfiguration('converter').get("recursiveTrimPostfixes") as boolean;
     const ignoreInitializer = vscode.workspace.getConfiguration('converter').get("ignoreInitializer") as boolean;
@@ -171,6 +172,7 @@ export function getCs2TsConfiguration(): ExtensionCs2TsConfig {
 
     return {
         propertiesToCamelCase,
+        propertiesToTitleCase,
         keepAbbreviation,
         trimPostfixes,
         recursiveTrimPostfixes,

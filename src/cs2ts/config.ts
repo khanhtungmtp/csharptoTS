@@ -1,6 +1,7 @@
 export interface ExtensionCs2TsConfig {
     /**True for camelCase, false for preserving original name */
     propertiesToCamelCase: boolean;
+    propertiesToTitleCase: boolean;
     /**True to set lower to first word of name or name (do not contain '_'). Default is True */
     keepAbbreviation: boolean;
     /**Removes specified postfixes from property names, types & class names. Can be array OR string. Case-sensitive. */

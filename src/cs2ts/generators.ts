@@ -145,11 +145,34 @@ export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsCo
             }
 
         }
+        if (config.propertiesToTitleCase && hasConsecutiveUppercase(name)) {
+            // TRUONG HOP TITLECase: TUNGMtp
+            // name: KPINew
+            const part0 = convertToTitleCase(name); // KPI
+            const part1 = name.slice(part0.length); // New
+            return part0.toLowerCase().concat(part1); // kpiNew
+        }
         return name[0].toLowerCase() + name.substring(1);
     }
     return name;
 }
 
+function hasConsecutiveUppercase(input: string): boolean {
+    return /[A-Z]{2,}(?=[a-z])/.test(input);
+}
+
+function convertToTitleCase(input: string): string {
+    const consecutiveUppercaseMatches = input.match(/[A-Z]+(?=[a-z])/g);
+
+    if (consecutiveUppercaseMatches) {
+        // Lấy chữ cái viết hoa gần cuối cùng
+        const lastUppercase = consecutiveUppercaseMatches[consecutiveUppercaseMatches.length - 1];
+
+        // Loại bỏ chữ cái cuối cùng
+        return lastUppercase.slice(0, -1);
+    }
+    return input;
+}
 
 function convertLastCharToLowerCase(input: string): string {
     if (input.trim() !== '') {

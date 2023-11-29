@@ -77,6 +77,11 @@
         "type": "object",
         "title": "TS to C# configuration",
         "properties": {
+          "converter.propertiesToTitleCase": {
+            "type": "boolean",
+            "default": true,
+            "description": "True for TITLECase, false for preserving original name. Default is true (set first char to lower case)"
+          },
           "converter.propertiesToCamelCase": {
             "type": "boolean",
             "default": true,
