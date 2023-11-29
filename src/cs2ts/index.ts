@@ -120,7 +120,7 @@ function removeUsings(code: string): string {
 
 function removeNameSpace(code: string): string {
     // Check if the code contains a namespace declaration without curly braces
-    const hasNamespaceWithoutCurlyBraces = /namespace\s+[^;]+;\s*\n/g.test(code);
+    const hasNamespaceWithoutCurlyBraces = /namespace\s+[^{]+\s*\n\s*(?!{)/g.test(code);
 
     // Check if the code contains a namespace declaration with curly braces
     const hasNamespaceWithCurlyBraces = /namespace\s+[^{]+{?\s*\n?/g.test(code);
@@ -277,9 +277,9 @@ function formatTypeScriptCode(code: string): string {
             lines[i] = getIndentation() + line;
         }
     }
-
+    var filtered = lines.filter(line => line.trim() !== '');
     // Join the lines back into a formatted code block
-    const formattedCode = lines.join('\n');
+    const formattedCode = filtered.join('\n');
 
     return formattedCode.trim();
 }
