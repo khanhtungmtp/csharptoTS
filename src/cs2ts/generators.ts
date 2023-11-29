@@ -158,7 +158,7 @@ export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsCo
 }
 
 function hasConsecutiveUppercase(input: string): boolean {
-    return /[A-Z]{2,}(?=[a-z])/.test(input);
+    return /^[A-Z]{2,}(?=[a-z])/.test(input);
 }
 
 function convertToTitleCase(input: string): string {
