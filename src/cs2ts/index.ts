@@ -168,6 +168,7 @@ export function getCs2TsConfiguration(): ExtensionCs2TsConfig {
     const preserveModifiers = vscode.workspace.getConfiguration('converter').get("preserveModifiers") as boolean;
     const removeSpecialKeywords = vscode.workspace.getConfiguration('converter').get("removeSpecialKeywords") as boolean;
     const removeUsings = vscode.workspace.getConfiguration('converter').get("removeUsings") as boolean;
+    const removeNamespace = vscode.workspace.getConfiguration('converter').get("removeNamespace") as boolean;
     const dictionaryToRecord = vscode.workspace.getConfiguration('converter').get("dictionaryToRecord") as boolean;
 
     return {
@@ -188,6 +189,7 @@ export function getCs2TsConfiguration(): ExtensionCs2TsConfig {
         preserveModifiers,
         removeSpecialKeywords,
         removeUsings,
+        removeNamespace,
         dictionaryToRecord
     };
 }
@@ -204,8 +206,9 @@ export function cs2ts(code: string, config: ExtensionCs2TsConfig): string {
     if (config.removeUsings) {
         code = removeUsings(code);
     }
-
-    code = removeNameSpace(code);
+    if (config.removeNamespace) {
+        code = removeNameSpace(code);
+    }
     // Remove annotations above the class
     code = removeAnonationClass(code);
 
@@ -232,8 +235,8 @@ export function cs2ts(code: string, config: ExtensionCs2TsConfig): string {
         index = nextMatch.index + nextMatch.length;
     }
     // add the last unmatched code:
-    ret += code.substr(index);
-    if (!isNamespaceSingle && !isNoNameSpace) {
+    ret += code.substring(index);
+    if (!isNamespaceSingle && !isNoNameSpace && config.removeNamespace) {
         ret = ret.trim().replace(/^{|}$/g, '');
     }
     isNamespaceSingle = false;

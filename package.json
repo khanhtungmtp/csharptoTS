@@ -4,7 +4,7 @@
   "publisher": "khanhtungmtp",
   "description": "",
   "icon": "images/logo.png",
-  "version": "2.0.5",
+  "version": "2.0.7",
   "engines": {
     "vscode": "^1.83.0"
   },
@@ -75,7 +75,7 @@
     "configuration": [
       {
         "type": "object",
-        "title": "TS to C# configuration",
+        "title": "C# to TS configuration",
         "properties": {
           "converter.propertiesToTitleCase": {
             "type": "boolean",
@@ -169,6 +169,11 @@
             "type": "boolean",
             "default": true,
             "description": "True to remove using/import statements"
+          },
+          "converter.removeNamespace": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to remove namespace"
           }
         }
       }

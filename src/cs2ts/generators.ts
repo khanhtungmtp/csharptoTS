@@ -116,6 +116,11 @@ export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsCo
     var isAbbreviation = name.toUpperCase() === name;
     name = trimMemberName(name, config);
     if (config.keepAbbreviation && isAbbreviation) {
+        // co 2 truong hop
+        /*
+        1: khong co dau _   ex: MTP
+        2: co dau _         ex: KHANHTUNG_MTP
+        */
         if (name.includes('_')) {
             const parts: string[] = name.split('_');
             if (parts.length > 1) {

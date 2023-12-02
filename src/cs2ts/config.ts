@@ -32,6 +32,7 @@ export interface ExtensionCs2TsConfig {
     removeSpecialKeywords: boolean;
     /**True to remove imports/using statements */
     removeUsings: boolean;
+    removeNamespace: boolean;
     /**True to convert a C# dictionary into a typescript Record instead of { [key: t]: V }. Default is false */
     dictionaryToRecord: boolean;
 }

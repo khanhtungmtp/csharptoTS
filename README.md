@@ -1,6 +1,6 @@
 # C# to TypeScript
 
-Convert C# Models, ViewModels and DTOs into their TypeScript equivalents, Support All UpperCase ex: KHANHTUNG_MTP, CamelCase, ....
+Convert C# Models, ViewModels and DTOs into their TypeScript equivalents, Support All UpperCase ex: KHANHTUNG_MTP, CamelCase, PascalCase, TitleCase....
 
 # C# to TypeScript (To File)
 
