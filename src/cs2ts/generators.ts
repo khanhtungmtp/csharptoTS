@@ -125,17 +125,16 @@ export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsCo
             const parts: string[] = name.split('_');
             if (parts.length > 1) {
                 if (parts[0].length < 2) {
-                  parts[0] = parts[0].toLowerCase();
+                    parts[0] = parts[0].toLowerCase();
                 } else {
-                  parts[0] = convertLastCharToLowerCase(parts[0]);
+                    parts[0] = convertLastCharToLowerCase(parts[0]);
                 }
                 // Ghép các phần lại thành chuỗi mới
                 return parts.join('_');
-              }
-          
-       }else{
-        return name.toLowerCase();
-       }
+            }
+        } else {
+            return name.toLowerCase();
+        }
     }
     if (config.propertiesToCamelCase && !isAbbreviation) {
         /** TH KO VIET HOA HOAN TOAN NHUNG INCLUDE _ VA TRUOC _ VIET HOA HOAN TOAN */
@@ -144,6 +143,8 @@ export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsCo
             if (parts.length > 1) {
                 if (parts[0].length > 2 && parts[0].toUpperCase() === parts[0]) {
                     parts[0] = convertLastCharToLowerCase(parts[0]);
+                }else{
+                    parts[0] = convertFirstCharToLowerCase(parts[0]);
                 }
                 // Ghép các phần lại thành chuỗi mới
                 return parts.join('_');
@@ -164,6 +165,14 @@ export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsCo
 
 function hasConsecutiveUppercase(input: string): boolean {
     return /^[A-Z]{2,}(?=[a-z])/.test(input);
+}
+
+function convertFirstCharToLowerCase(input: string): string {
+    if (input && input.trim() !== '') {
+        // Chuyển đổi chữ cái đầu tiên thành chữ thường và ghép nối với phần còn lại của chuỗi
+        return input.charAt(0).toLowerCase() + input.slice(1);
+    }
+    return input;
 }
 
 function convertToTitleCase(input: string): string {
