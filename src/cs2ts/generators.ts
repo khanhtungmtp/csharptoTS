@@ -164,7 +164,7 @@ export function getTypescriptPropertyName(name: string, config: ExtensionCs2TsCo
 }
 
 function hasConsecutiveUppercase(input: string): boolean {
-    return /^[A-Z]{2,}(?=[a-z])/.test(input);
+    return /^[A-Z]{3,}(?=[a-z])/.test(input);
 }
 
 function convertFirstCharToLowerCase(input: string): string {

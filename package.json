@@ -4,7 +4,7 @@
   "publisher": "khanhtungmtp",
   "description": "",
   "icon": "images/logo.png",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "engines": {
     "vscode": "^1.83.0"
   },
